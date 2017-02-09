@@ -1,0 +1,113 @@
+\documentclass[parskip=half]{scrartcl}
+
+% Language
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+
+% Font
+%\usepackage{textcomp}
+%\usepackage{fontspec}
+%\usepackage{unicode-math}
+%\setmainfont{Linux Libertine O}
+%\setmathfont{Libertinus Math}
+%\setsansfont{Linux Biolinum}
+%\usepackage{microtype}
+
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\lstset{%
+	basicstyle=\ttfamily%,
+	%keywordstyle=\bf\color{blue},
+	%commentstyle=\color{red},
+	%stringstyle=\color{green!60!black} ,
+	%identifierstyle=,
+	%language=c++,
+	%showstringspaces=false,
+	%breaklines=true,
+	%breakatwhitespace=true,
+	%morecomment=[s]{\%\{}{\%\}},
+	%morecomment=[s]{\#\{}{\#\}},
+	%morekeywords={sc_module},
+    %showlines=false,
+    %xleftmargin=0.7cm,
+    %resetmargins=false
+}
+
+\input{resistor}
+\input{capacitor}
+
+\title{Circuits Package}
+\subtitle{Roadmap}
+\author{Patrick Schulz}
+\date{\today} % replace with release date
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+    \section{Overview}
+    \begin{lstlisting}
+    \begin{circuit}
+        [
+            template = divider
+        ]
+
+    \end{circuit}
+    \end{lstlisting}
+    \section{Symbols}
+    \subsection{The \texttt{\textbackslash component} command}
+    The \lstinline!\component! command is used to place components (single instances or compounds of devices) for further use especially in circuit templates 
+    (see section \ref{sec:templates}).
+    \begin{tcolorbox}
+        \lstinline!\component{R}!
+        \tcblower
+        \centering
+        \begin{tikzpicture}
+            \node[resistor] { };
+        \end{tikzpicture}
+    \end{tcolorbox}
+    Multiple devices can be used:
+    \begin{tcolorbox}
+        \lstinline!\component{R\\C}!
+        \tcblower
+        \centering
+        \begin{tikzpicture}
+            \node[resistor] { };
+            \node[capacitor] at (0, -0.75) { };
+        \end{tikzpicture}
+    \end{tcolorbox}
+    \begin{tcolorbox}
+        \lstinline!\component[draw wires]{R\\C,R}!
+        \tcblower
+        \centering
+        \begin{tikzpicture}
+            \node[resistor] (R1) { };
+            \node[capacitor] at (-0.5, -0.75) (C1) { };
+            \node[resistor] at ( 0.5, -0.75) (R2) { };
+            \draw[wire] (C1.east) -- (R2.west);
+            \draw[wire] (C1.west) -- ++(-0.25, 0) |- (R1.west);
+            \draw[wire] (R2.east) -- ++( 0.25, 0) |- (R1.east);
+        \end{tikzpicture}
+    \end{tcolorbox}
+    \lstinline!\\! binds weaker than \lstinline!,!, so in the following examples the devices have to be grouped:
+    \begin{tcolorbox}
+        \lstinline!\component[draw wires]{{R\\C},R}!
+        \tcblower
+        \centering
+        \begin{tikzpicture}[dot/.style = {fill, circle, inner sep = 0cm, minimum size = 0.1cm}]
+            \node[resistor] at(0, 0.375) (R1) { };
+            \node[capacitor] at (0, -0.375) (C1) { };
+            \node[resistor] at (1, 0) (R2) { };
+            \draw[wire] (C1.west) -- ++(-0.4, 0) |- (R1.west);
+            \draw[wire] (C1.east) -- ++( 0.4, 0) |- (R1.east);
+            \draw[wire] ([xshift=0.4cm] C1.east |- R2.west) node[dot] { } -- (R2.west);
+        \end{tikzpicture}
+    \end{tcolorbox}
+    \section{Circuit Templates}\label{sec:templates}
+    \subsection{Transistor Circuits}
+    \subsection{Operational Amplifier Circuits}
+    \subsection{Passive Circuits}
+    \section{Module System}
+\end{document}
+
+% vim: ft=tex
