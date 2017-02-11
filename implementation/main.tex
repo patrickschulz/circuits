@@ -1,0 +1,81 @@
+\documentclass[parskip=half]{scrartcl}
+
+% Language
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+
+% Font
+\usepackage{textcomp}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Libertinus Serif}
+\setmathfont{Libertinus Math}
+\setsansfont{Linux Biolinum}
+\usepackage{microtype}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.misc, backgrounds}
+\usepackage{xparse}
+
+\tikzset{
+    wire/.style = {thick},
+    circuits/line width/.initial = 0.8pt
+}
+\input{resistor}
+\input{capacitor}
+
+\makeatletter
+\input{circuits.code}
+\makeatother
+
+\pgfkeys{
+    /circuits/R/.style = {/tikz/resistor},
+    /circuits/C/.style = {/tikz/capacitor},
+    /circuits/empty/.style = {coordinate}
+}
+
+\newcount\circcount
+\circcount=0
+\newdimen\componentxspace
+\newdimen\componentyspace
+\newdimen\circstart
+\componentxspace=0cm
+\componentyspace=0.75cm
+\circstart=0pt
+
+\DeclareDocumentCommand\component{m}{
+    \pgfmathsetcount{\global\circcount}{0}
+    % count number of devices in this row
+    \foreach \xx in {#1} {\global\advance\circcount by 1}
+    \pgfmathsetlength{\global\circstart}{(\the\circcount + 1) / 2 * \componentyspace}
+    \foreach \ii in {1,...,\the\circcount}
+    {
+        \pgftransformshift{\pgfpoint{\componentxspace}{\ii * \componentyspace - \circstart}}
+        \pgfnode{americanresistorshape}{center}{}{}{\pgfusepath{stroke}}
+    }
+}
+
+\makeatletter
+\def\chara{a}
+\def\scan(#1){\pgfutil@ifnextchar\chara{foo}{bar}}
+\makeatother
+
+\begin{document}
+    \begin{pgfpicture}
+        \component{R,R}
+    \end{pgfpicture}
+    \makeatletter
+    \edef\pgf@list{foo,bar}
+    \pgfutil@for\pgf@temp:=\pgf@list\do{%
+        |\pgf@temp|
+    }
+    \makeatother
+    \begin{tikzpicture}[]
+        \node at (-0.5, 0) (a) { a };
+        \node at ( 0.5, 0) (b) { b };
+        \node[draw, rectangle, fit = (a) (b)] { };
+    \end{tikzpicture}
+    \scan(b)
+\end{document}
+
+% vim: ft=tex nowrap

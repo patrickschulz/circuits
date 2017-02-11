@@ -1,0 +1,44 @@
+\tikzset{
+    circuits/capacitor/width/.initial = 0.1cm,
+    circuits/capacitor/height/.initial = 0.5cm,
+    capacitor/.style = {capacitorshape}
+}
+
+\makeatletter
+\pgfdeclareshape{capacitorshape}
+{
+    \saveddimen{\width}{\pgf@x=\pgfkeysvalueof{/tikz/circuits/capacitor/width}}
+    \saveddimen{\height}{\pgf@x=\pgfkeysvalueof{/tikz/circuits/capacitor/height}}
+    \savedanchor{\plus}{
+        \pgfpointadd{\pgfpointorigin}{\pgfpoint{-0.5 * \pgfkeysvalueof{/tikz/circuits/capacitor/width}}{0cm}}
+    }
+    \savedanchor{\minus}{
+        \pgfpointadd{\pgfpointorigin}{\pgfpoint{0.5 * \pgfkeysvalueof{/tikz/circuits/capacitor/width}}{0cm}}
+    }
+
+    % electrical terminals
+    \anchor{plus}{\plus}
+    \anchor{minus}{\minus}
+    % general anchors
+    \anchor{center}{\pgfpointorigin}
+    \anchor{east}{\minus}
+    \anchor{west}{\plus}
+    \anchor{north}{\pgfpointadd{\pgfpointorigin}{\pgfpoint{0cm}{0.5 * \height}}}
+    \anchor{south}{\pgfpointadd{\pgfpointorigin}{\pgfpoint{0cm}{-0.5 * \height}}}
+    \anchor{south east}{\pgfpointadd{\pgfpointorigin}{\pgfpoint{0.5 * \height}{-0.5 * \width}}}
+    \anchor{south west}{\pgfpointadd{\pgfpointorigin}{\pgfpoint{-0.5 * \height}{-0.5 * \width}}}
+    \anchor{north east}{\pgfpointadd{\pgfpointorigin}{\pgfpoint{0.5 * \height}{0.5 * \width}}}
+    \anchor{north west}{\pgfpointadd{\pgfpointorigin}{\pgfpoint{-0.5 * \height}{0.5 * \width}}}
+    \beforebackgroundpath{
+        \pgfsetlinewidth{\pgfkeysvalueof{/tikz/circuits/line width}}
+        \pgfpathmoveto{\pgfpointadd{\plus}{\pgfpoint{0cm}{0.5 * \height}}}
+        \pgfpathlineto{\pgfpointadd{\plus}{\pgfpoint{0cm}{-0.5 * \height}}}
+        %\pgfusepath{stroke}
+        \pgfpathmoveto{\pgfpointadd{\minus}{\pgfpoint{0cm}{0.5 * \height}}}
+        \pgfpathlineto{\pgfpointadd{\minus}{\pgfpoint{0cm}{-0.5 * \height}}}
+        \pgfusepath{stroke}
+    }
+}
+\makeatother
+
+% vim: ft=plaintex
